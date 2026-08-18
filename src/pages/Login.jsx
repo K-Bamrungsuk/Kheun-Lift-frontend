@@ -155,7 +155,7 @@ function Login() {
                 to="/register"
                 className="text-yellow-500 hover:text-yellow-200 font-semibold"
               >
-                &nbsp; Create one
+                &nbsp; Create new account
               </Link>
             </p>
           </div>
