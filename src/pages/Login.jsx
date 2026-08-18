@@ -5,7 +5,7 @@ import { loginUser } from "../api/auth.api";
 import { useAuthStore } from "../stores/auth.store";
 
 function Login() {
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
