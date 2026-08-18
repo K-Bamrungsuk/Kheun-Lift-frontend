@@ -4,7 +4,6 @@ import { registerUser } from "../api/auth.api";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function Register() {
-  
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -23,8 +22,8 @@ function Register() {
     try {
       const data = await registerUser(username, email, password);
 
-      const previousPath = location.state?.form
-      navigate(previousPath || "/login", { replace: true })
+      const previousPath = location.state?.form;
+      navigate(previousPath || "/login", { replace: true });
 
       console.log("data", data);
     } catch (err) {
@@ -34,28 +33,28 @@ function Register() {
 
   return (
     <>
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-8 sm:px-6">
+        <div className="w-full max-w-sm sm:max-w-md">
           {/* Logo */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-black tracking-widest text-white">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-widest text-white">
               KHEUN <span className="text-yellow-500">LIFT</span>
             </h1>
-            <p className="text-zinc-500 mt-2">
+            <p className="text-sm sm:text-base text-zinc-500 mt-2">
               Build your strength. Prove your rank.
             </p>
           </div>
 
           {/* Register Card */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl">
-            <div className="mb-7">
-              <h2 className="text-2xl font-bold text-white">Create Account</h2>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
+            <div className=" mb-6 sm:mb-7">
+              <h2 className=" text-xl sm:text-2xl font-bold text-white">Create Account</h2>
               <p className="text-sm text-zinc-500 mt-1">
                 Join the Kheun Lift community
               </p>
             </div>
 
-            <form onSubmit={hdlSubmit} className="space-y-5">
+            <form onSubmit={hdlSubmit} className="space-y-4 sm:space-y-5">
               {/* Username */}
               <div>
                 <label className="block text-sm font-medium text-zinc-300 mb-2">
