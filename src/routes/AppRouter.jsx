@@ -3,42 +3,62 @@ import {
   Navigate,
   Outlet,
   RouterProvider,
-} from "react-router";
+} from "react-router-dom";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import Profile from "../pages/Profile";
 import Register from "../pages/Register";
+import Public from "../pages/Public";
 
-const commonPath = [
-    { path: "/public", element: <p>public</p> }
-];
+import ProtectRoute from "./ProtectRoute";
+import GuestRoute from "./GuestRoute";
 
-const guestRouter = createBrowserRouter([
-  { path: "/login", Component: Login },
-  { path: "/register", Component: Register },
-  { path: "*", element: <Navigate to="/" /> },
-  ...commonPath,
-]);
-
-const userRoute = createBrowserRouter([
+const router = createBrowserRouter([
+  // Public
   {
     path: "/",
-    element: <Outlet />,
+    element: <Public />,
+  },
+
+  // Guest: Not loging in
+  {
+    element: <GuestRoute />,
     children: [
-      { path: "", Component: Home },
-      { path: "profile", Component: Profile },
-      { path: "*", element: <Navigate to="/" /> },
-      ...commonPath,
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/register",
+        element: <Register />,
+      },
     ],
+  },
+
+  // User: login as a user
+  {
+    element: <ProtectRoute />,
+    children: [
+      {
+        path: "/home",
+        element: <Home />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
+      },
+    ],
+  },
+
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
 
-function AppRouter() {
-    // const user = "aaaaaa";
-  const user = null;
-  const finalRouter = user ? userRouter : guestRouter;
 
-  return <RouterProvider router={finalRouter} />;
+function AppRouter() {
+  return <RouterProvider router={router} />;
 }
 
 export default AppRouter;

@@ -1,6 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
+import { Lock, Mail, User } from "lucide-react";
+import { registerUser } from "../api/auth.api";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function Register() {
+  
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const hdlSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      console.log("Password not match");
+      return;
+    }
+
+    try {
+      const data = await registerUser(username, email, password);
+
+      const previousPath = location.state?.form
+      navigate(previousPath || "/login", { replace: true })
+
+      console.log("data", data);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+
   return (
     <>
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
@@ -24,21 +55,29 @@ function Register() {
               </p>
             </div>
 
-            <form className="space-y-5">
+            <form onSubmit={hdlSubmit} className="space-y-5">
               {/* Username */}
               <div>
                 <label className="block text-sm font-medium text-zinc-300 mb-2">
                   Username
                 </label>
 
-                <input
-                  type="text"
-                  placeholder="Enter your username"
-                  className="w-full rounded-lg bg-zinc-950 border border-zinc-700
-                         px-4 py-3 text-white placeholder-zinc-600
+                <div className="relative">
+                  <User
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter your username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full rounded-lg bg-zinc-950 border border-zinc-700
+                         pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
                          focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                />
+                  />
+                </div>
               </div>
 
               {/* Email */}
@@ -47,14 +86,22 @@ function Register() {
                   Email
                 </label>
 
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full rounded-lg bg-zinc-950 border border-zinc-700
-                         px-4 py-3 text-white placeholder-zinc-600
+                <div className="relative">
+                  <Mail
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-lg bg-zinc-950 border border-zinc-700
+                          pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
                          focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                />
+                  />
+                </div>
               </div>
 
               {/* Password */}
@@ -63,14 +110,22 @@ function Register() {
                   Password
                 </label>
 
-                <input
-                  type="password"
-                  placeholder="Create a password"
-                  className="w-full rounded-lg bg-zinc-950 border border-zinc-700
-                         px-4 py-3 text-white placeholder-zinc-600
+                <div className="relative">
+                  <Lock
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-lg bg-zinc-950 border border-zinc-700
+                         pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
                          focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                />
+                  />
+                </div>
               </div>
 
               {/* Confirm Password */}
@@ -79,14 +134,22 @@ function Register() {
                   Confirm Password
                 </label>
 
-                <input
-                  type="password"
-                  placeholder="Confirm your password"
-                  className="w-full rounded-lg bg-zinc-950 border border-zinc-700
-                         px-4 py-3 text-white placeholder-zinc-600
+                <div className="relative">
+                  <Lock
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full rounded-lg bg-zinc-950 border border-zinc-700
+                         pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
                          focus:border-gray-500 focus:ring-1 focus:ring-gray-500"
-                />
+                  />
+                </div>
               </div>
 
               {/* Button */}
@@ -103,13 +166,13 @@ function Register() {
 
             {/* Login */}
             <p className="text-center text-sm text-zinc-400 mt-6">
-              Already have an account?{" "}
-              <a
-                href="/login"
+              Already have an account?
+              <Link
+                to="/login"
                 className="text-yellow-500 hover:text-yellow-200 font-semibold"
               >
-                Login
-              </a>
+                &nbsp; Login
+              </Link>
             </p>
           </div>
         </div>
