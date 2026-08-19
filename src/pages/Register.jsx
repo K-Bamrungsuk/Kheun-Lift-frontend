@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Lock, Mail, User } from "lucide-react";
 import { apiRegister } from "../api/mainApi";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
   const navigate = useNavigate();
@@ -12,24 +12,25 @@ function Register() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    const body = Object.fromEntries(formData);
 
-    if (body.password !== body.confirmPassword) {
+    const body = {
+      username: formData.get("username"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
+    const confirmPassword = formData.get("confirmPassword");
+
+    if (body.password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
-    const { confirmPassword, ...registerBody } = body;
-
     try {
-      await apiRegister(registerBody);
+      await apiRegister(body);
       navigate("/login", { replace: true });
     } catch (err) {
-      setError(
-        err.response?.status === 409
-          ? "This email is already registered."
-          : "Registration failed. Please try again.",
-      );
+      setError(err.response.data.message || "Registration failed.");
     }
   };
 
