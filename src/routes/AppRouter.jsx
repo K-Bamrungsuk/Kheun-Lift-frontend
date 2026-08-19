@@ -9,6 +9,7 @@ import Home from "../pages/Home";
 import Profile from "../pages/Profile";
 import Register from "../pages/Register";
 import Public from "../pages/Public";
+import Leaderboard from "../pages/Leaderboard";
 
 import ProtectRoute from "./ProtectRoute";
 import GuestRoute from "./GuestRoute";
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
         path: "/profile",
         element: <Profile />,
       },
+      {
+        path: "/leaderboard",
+        element: <Leaderboard/>
+      }
     ],
   },
 
