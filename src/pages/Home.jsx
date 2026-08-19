@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { House, Trophy, Plus, Users, User, Dumbbell } from "lucide-react";
 
 const classes = [
@@ -20,30 +20,101 @@ const classes = [
   },
 ];
 
+const navigation = [
+  { name: "Home", icon: House, active: true },
+  { name: "Rank", icon: Trophy },
+  { name: "Social", icon: Users },
+  { name: "Profile", icon: User },
+];
+
+function Actions({ desktop = false }) {
+  return (
+    <div
+      className={`grid grid-cols-2 gap-3 ${
+        desktop ? "hidden md:grid" : "md:hidden"
+      }`}
+    >
+      <button className="rounded-2xl bg-yellow-400 py-4 font-black text-black">
+        Submit Lift
+      </button>
+
+      <button className="rounded-2xl border border-zinc-800 bg-zinc-950 py-4 font-bold">
+        Leaderboard
+      </button>
+    </div>
+  );
+}
+
 function Home() {
-  const activities = ["Lorem", "Lorem", "Lorem"];
+  const [user, setUser] = useState(null);
+  const [activities, setActivities] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadHomeData() {
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const [userResponse, liftsResponse] = await Promise.all([
+          api.get("/users/me"),
+          api.get("/lifts/me"),
+        ]);
+
+        if (!isMounted) return;
+
+        // รองรับทั้ง response แบบส่ง object/array ตรง ๆ และแบบครอบด้วย data
+        const userData = userResponse.data?.data ?? userResponse.data;
+        const liftsData = liftsResponse.data?.data ?? liftsResponse.data;
+
+        const liftRecords =
+          liftsData?.liftRecords ?? liftsData?.lifts ?? liftsData;
+
+        setUser(userData?.user ?? userData);
+        setActivities(
+          Array.isArray(liftRecords) ? liftRecords.slice(0, 3) : [],
+        );
+      } catch (requestError) {
+        if (!isMounted) return;
+
+        setError(
+          requestError.response?.data?.message ?? "Unable to load your data.",
+        );
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadHomeData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const profileInitial = user?.username?.trim()?.charAt(0).toUpperCase() || "?";
+
   const leaderboard = useMemo(
     () => classes[Math.floor(Math.random() * classes.length)],
     [],
   );
-
-  const navigation = [
-    { name: "Home", icon: House, active: true },
-    { name: "Rank", icon: Trophy },
-    { name: "Social", icon: Users },
-    { name: "Profile", icon: User },
-  ];
 
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Desktop navbar */}
       <header className="hidden border-b border-zinc-800 bg-zinc-950 md:block">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-8 py-4">
-          <div className="flex items-center gap-3 font-black">
+          <div className="flex items-center gap-2 font-black">
             <span className="rounded-xl bg-yellow-400 p-2 text-black">
               <Dumbbell size={22} />
             </span>
-            LOREM LIFT
+
+            <span>
+              KHEUN <span className="text-yellow-400">LIFT</span>
+            </span>
           </div>
 
           <nav className="flex items-center gap-2">
@@ -53,7 +124,7 @@ function Home() {
                 className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold ${
                   active
                     ? "bg-yellow-400 text-black"
-                    : "text-zinc-400 hover:bg-zinc-900"
+                    : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
                 }`}
               >
                 <Icon size={18} />
@@ -79,6 +150,7 @@ function Home() {
           </span>
         </header>
 
+        {/* Desktop title */}
         <div className="hidden md:block">
           <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">
             Dashboard
@@ -91,20 +163,29 @@ function Home() {
             {/* Profile */}
             <section className="flex items-center gap-4 rounded-3xl border border-zinc-800 bg-zinc-950 p-4 md:flex-col md:items-start md:p-6">
               <div className="grid size-14 place-items-center rounded-full bg-yellow-400 font-black text-black md:size-20">
-                L
+                {profileInitial}
               </div>
 
               <div>
                 <p className="text-xs uppercase tracking-widest text-zinc-500">
                   User Profile
                 </p>
-                <h2 className="mt-1 text-lg font-bold">Lorem ipsum</h2>
+
+                <h2 className="mt-1 text-lg font-bold">
+                  {isLoading ? "Loading..." : user?.username || "Unknown user"}
+                </h2>
 
                 <div className="mt-2 flex flex-wrap gap-2 text-xs text-zinc-400">
-                  <span>Lorem</span>
-                  <span>•</span>
-                  <span>Lorem kg</span>
-                  <span className="text-yellow-400">Lorem</span>
+                  {user?.gender && (
+                    <span className="capitalize">{user.gender}</span>
+                  )}
+                  {user?.gender && user?.bodyWeight != null && <span>•</span>}
+                  {user?.bodyWeight != null && (
+                    <span>{user.bodyWeight} kg</span>
+                  )}
+                  {user?.email && (
+                    <span className="text-yellow-400">{user.email}</span>
+                  )}
                 </div>
               </div>
             </section>
@@ -113,29 +194,60 @@ function Home() {
             <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
               <div className="mb-3 flex justify-between">
                 <h2 className="font-bold">Recent Activity</h2>
+
                 <button className="text-xs text-yellow-400">View all</button>
               </div>
 
-              {activities.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between border-t border-zinc-800 py-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="size-2 rounded-full bg-yellow-400" />
-                    <div>
-                      <p className="text-sm font-bold">{item}</p>
-                      <p className="text-xs text-zinc-500">Lorem ipsum</p>
-                    </div>
-                  </div>
+              {error && (
+                <p className="border-t border-zinc-800 py-4 text-sm text-red-400">
+                  {error}
+                </p>
+              )}
 
-                  <strong className="text-xs">Lorem kg</strong>
-                </div>
-              ))}
+              {!error && isLoading && (
+                <p className="border-t border-zinc-800 py-4 text-sm text-zinc-500">
+                  Loading activities...
+                </p>
+              )}
+
+              {!error && !isLoading && activities.length === 0 && (
+                <p className="border-t border-zinc-800 py-4 text-sm text-zinc-500">
+                  No lift records yet.
+                </p>
+              )}
+
+              {!error &&
+                activities.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between border-t border-zinc-800 py-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="size-2 rounded-full bg-yellow-400" />
+
+                      <div>
+                        <p className="text-sm font-bold">
+                          {item.exercise?.name || "Lift"}
+                        </p>
+                        <p className="text-xs text-zinc-500">
+                          {item.reps} reps
+                          {item.performedAt
+                            ? ` • ${new Date(item.performedAt).toLocaleDateString()}`
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    <strong className="text-xs">{item.weight} kg</strong>
+                  </div>
+                ))}
             </section>
           </div>
 
           <div className="space-y-4">
+            {/* Mobile actions */}
+            <Actions />
+
             {/* Leaderboard */}
             <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 md:p-8">
               <div className="mb-5 flex items-end justify-between border-b border-zinc-800 pb-5">
@@ -143,6 +255,7 @@ function Home() {
                   <p className="text-xs uppercase tracking-widest text-zinc-500">
                     Leaderboard
                   </p>
+
                   <h2 className="mt-1 text-xl font-bold">Top Rankings</h2>
                 </div>
 
@@ -182,16 +295,8 @@ function Home() {
               </div>
             </section>
 
-            {/* Actions */}
-            <div className="grid grid-cols-2 gap-3">
-              <button className="rounded-2xl bg-yellow-400 py-4 font-black text-black">
-                Submit Lift
-              </button>
-
-              <button className="rounded-2xl border border-zinc-800 bg-zinc-950 py-4 font-bold">
-                Leaderboard
-              </button>
-            </div>
+            {/* Desktop actions */}
+            <Actions desktop />
           </div>
         </div>
       </main>

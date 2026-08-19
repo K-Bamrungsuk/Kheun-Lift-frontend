@@ -1,33 +1,35 @@
 import React, { useState } from "react";
 import { Lock, Mail, User } from "lucide-react";
-import { registerUser } from "../api/auth.api";
+import { apiRegister } from "../api/mainApi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function Register() {
   const navigate = useNavigate();
-
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
   const hdlSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (password !== confirmPassword) {
-      console.log("Password not match");
+    const formData = new FormData(e.currentTarget);
+    const body = Object.fromEntries(formData);
+
+    if (body.password !== body.confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
 
+    const { confirmPassword, ...registerBody } = body;
+
     try {
-      const data = await registerUser(username, email, password);
-
-      const previousPath = location.state?.form;
-      navigate(previousPath || "/login", { replace: true });
-
-      console.log("data", data);
+      await apiRegister(registerBody);
+      navigate("/login", { replace: true });
     } catch (err) {
-      console.log("err", err);
+      setError(
+        err.response?.status === 409
+          ? "This email is already registered."
+          : "Registration failed. Please try again.",
+      );
     }
   };
 
@@ -48,7 +50,9 @@ function Register() {
           {/* Register Card */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
             <div className=" mb-6 sm:mb-7">
-              <h2 className=" text-xl sm:text-2xl font-bold text-white">Create Account</h2>
+              <h2 className=" text-xl sm:text-2xl font-bold text-white">
+                Create Account
+              </h2>
               <p className="text-sm text-zinc-500 mt-1">
                 Join the Kheun Lift community
               </p>
@@ -68,9 +72,9 @@ function Register() {
                   />
                   <input
                     type="text"
+                    name="username"
+                    required
                     placeholder="Enter your username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
                     className="w-full rounded-lg bg-zinc-950 border border-zinc-700
                          pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
@@ -92,9 +96,9 @@ function Register() {
                   />
                   <input
                     type="email"
+                    name="email"
+                    autoComplete="email"
                     placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full rounded-lg bg-zinc-950 border border-zinc-700
                           pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
@@ -116,9 +120,9 @@ function Register() {
                   />
                   <input
                     type="password"
+                    name="password"
+                    required
                     placeholder="Create a password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full rounded-lg bg-zinc-950 border border-zinc-700
                          pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
@@ -140,9 +144,9 @@ function Register() {
                   />
                   <input
                     type="password"
+                    name="confirmPassword"
+                    required
                     placeholder="Confirm your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full rounded-lg bg-zinc-950 border border-zinc-700
                          pl-10 pr-4 py-3 text-white placeholder-zinc-600
                          outline-none transition
@@ -150,6 +154,9 @@ function Register() {
                   />
                 </div>
               </div>
+              {error && (
+                <p className="text-sm text-red-400 text-center">{error}</p>
+              )}
 
               {/* Button */}
               <button

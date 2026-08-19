@@ -1,14 +1,14 @@
 import axios from "axios";
 import { useAuthStore } from "../stores/auth.store";
 
-const api = axios.create({
+const mainApi = axios.create({
   baseURL: "http://localhost:3000",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-api.interceptors.request.use((config) => {
+mainApi.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
 
   if (token) {
@@ -18,4 +18,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export default api;
+export const apiRegister = (body) => mainApi.post("/auth/register", body)
+
+export const apiLogin = (body) => mainApi.post("/auth/login", body);
+
+export const apiGetUser = (body) => mainApi.get("/users/me", body)

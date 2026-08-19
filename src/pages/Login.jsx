@@ -1,51 +1,34 @@
 import React, { useState } from "react";
 import { Lock, Mail } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { loginUser } from "../api/auth.api";
+import { Link, useNavigate } from "react-router-dom";
+import { apiLogin } from "../api/mainApi";
 import { useAuthStore } from "../stores/auth.store";
 
 function Login() {
-
   const navigate = useNavigate();
-  const location = useLocation();
-
   const setAuth = useAuthStore((state) => state.setAuth);
-
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const hdlChange = (e) => {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
 
   const hdlLogin = async (e) => {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
+    setError(" ");
+
+    //Inshort: const body = Object.fromEntries(new FormData(e.currentTarget));
+
+    const formData = new FormData(e.currentTarget);
+    const body = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
 
     try {
-      const data = await loginUser(form.email, form.password);
+      const response = await apiLogin(body);
+      const { token, user } = response.data;
 
-      setAuth(data.token, data.user);
-
-      const previousPath = location.state?.from;
-      navigate(previousPath || "/home", { replace: true });
-
+      setAuth(token, user);
+      navigate("/home", { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Login failed. Please check your email or password.",
-      );
-    } finally {
-      setIsLoading(false);
+      setError("Login failed. Please check your email or password.");
     }
   };
 
@@ -66,7 +49,9 @@ function Login() {
           {/* Login Card */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
             <div className="mb-6 sm:mb-7">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Welcome Back</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
+                Welcome Back
+              </h2>
               <p className="text-sm text-zinc-500 mt-1">
                 Login to continue your journey
               </p>
@@ -86,8 +71,6 @@ function Login() {
                   <input
                     type="email"
                     name="email"
-                    value={form.email}
-                    onChange={hdlChange}
                     autoComplete="email"
                     required
                     placeholder="Enter your email"
@@ -122,8 +105,6 @@ function Login() {
                   <input
                     type="password"
                     name="password"
-                    value={form.password}
-                    onChange={hdlChange}
                     autoComplete="current-password"
                     required
                     placeholder="Enter your password"
@@ -135,16 +116,21 @@ function Login() {
                 </div>
               </div>
 
-              {/* Button */}
+              {/* Error message */}
+              {error && (
+                <p className="text-sm text-red-400 text-center">{error}</p>
+              )}
+
+              {/* Login Button */}
               <button
                 type="submit"
-                disabled={isLoading}
+                onSubmit={hdlLogin}
                 className="w-full bg-yellow-500 hover:bg-yellow-300
                        text-gray-900 font-bold py-3 rounded-lg
                        transition duration-200
                        shadow-lg shadow-red-950/30"
               >
-                {isLoading ? "LOGGING IN..." : "LOGIN"}
+                LOGIN
               </button>
             </form>
 
