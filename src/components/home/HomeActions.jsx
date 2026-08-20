@@ -12,7 +12,7 @@ function HomeActions({
       <button
         type="button"
         onClick={onSubmitLift}
-        className="rounded-2xl bg-yellow-400 py-4 font-black text-black"
+        className="rounded-2xl bg-yellow-400 py-4 font-black text-black hover:bg-amber-100"
       >
         Submit Lift
       </button>
@@ -20,7 +20,7 @@ function HomeActions({
       <button
         type="button"
         onClick={onLeaderboard}
-        className="rounded-2xl border border-zinc-800 bg-zinc-950 py-4 font-bold"
+        className="rounded-2xl border border-zinc-800 bg-zinc-950 py-4 font-bold hover:border-gray-400"
       >
         Leaderboard
       </button>

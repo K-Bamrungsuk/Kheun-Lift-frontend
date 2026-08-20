@@ -12,93 +12,46 @@ import { useHomeStore } from "../stores/home.store";
 
 function Home() {
   const navigate = useNavigate();
+  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
 
-  const [isSubmitOpen, setIsSubmitOpen] =
-    useState(false);
-
-  const {
-    user,
-    activities,
-    leaderboard,
-    isLoading,
-    error,
-    fetchHomeData,
-  } = useHomeStore();
-
-  const hasLeaderboard =
-    Array.isArray(leaderboard) &&
-    leaderboard.length > 0;
+  const { user, activities, leaderboard, isLoading, error, fetchHomeData } =
+    useHomeStore();
 
   useEffect(() => {
-    // โหลดเมื่อเปิดหน้า Home ครั้งแรก
     fetchHomeData();
 
-    // โหลดใหม่เมื่อกลับมาที่ tab หน้าเว็บ
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        fetchHomeData();
-      }
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") fetchHomeData();
     };
 
-    document.addEventListener(
-      "visibilitychange",
-      handleVisibilityChange,
-    );
+    document.addEventListener("visibilitychange", refreshWhenVisible);
 
-    return () => {
-      document.removeEventListener(
-        "visibilitychange",
-        handleVisibilityChange,
-      );
-    };
+    return () =>
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
   }, [fetchHomeData]);
 
-  const goToLeaderboard = () => {
-    navigate("/leaderboard");
-  };
-
-  const openSubmitLift = () => {
-    setIsSubmitOpen(true);
-  };
-
-  const closeSubmitLift = () => {
-    setIsSubmitOpen(false);
-  };
+  const goToLeaderboard = () => navigate("/leaderboard");
 
   const handleNavbarNavigate = (name) => {
-    if (name === "Add Lift") {
-      openSubmitLift();
-      return;
-    }
-
-    if (name === "Rank") {
-      goToLeaderboard();
-    }
+    if (name === "Add Lift") setIsSubmitOpen(true);
+    if (name === "Rank") goToLeaderboard();
   };
 
   const handleLiftCreated = async () => {
-    // โหลด Recent Activity หลังสร้าง Lift สำเร็จ
     await fetchHomeData();
-
-    closeSubmitLift();
+    setIsSubmitOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Navbar
-        activePage="Home"
-        onNavigate={handleNavbarNavigate}
-      />
+      <Navbar activePage="Home" onNavigate={handleNavbarNavigate} />
 
       <main className="mx-auto max-w-md space-y-4 px-4 pb-28 pt-6 md:max-w-6xl md:px-8 md:pb-10 md:pt-10">
         <HomeHeader />
 
         <div className="grid gap-4 md:grid-cols-[320px_1fr]">
           <div className="space-y-4">
-            <ProfileCard
-              user={user}
-              isLoading={isLoading}
-            />
+            <ProfileCard user={user} isLoading={isLoading} />
 
             <RecentActivity
               activities={activities}
@@ -108,14 +61,12 @@ function Home() {
           </div>
 
           <div className="space-y-4">
-            {/* Mobile actions */}
             <HomeActions
-              onSubmitLift={openSubmitLift}
+              onSubmitLift={() => setIsSubmitOpen(true)}
               onLeaderboard={goToLeaderboard}
             />
 
-            {/* แสดงเฉพาะเมื่อมี Leaderboard */}
-            {hasLeaderboard && (
+            {Array.isArray(leaderboard) && leaderboard.length > 0 && (
               <LeaderboardCard
                 leaderboard={leaderboard}
                 isLoading={isLoading}
@@ -124,20 +75,18 @@ function Home() {
               />
             )}
 
-            {/* Desktop actions */}
             <HomeActions
               desktop
-              onSubmitLift={openSubmitLift}
+              onSubmitLift={() => setIsSubmitOpen(true)}
               onLeaderboard={goToLeaderboard}
             />
           </div>
         </div>
       </main>
 
-      {/* Submit Lift modal */}
       {isSubmitOpen && (
         <SubmitLiftCard
-          onClose={closeSubmitLift}
+          onClose={() => setIsSubmitOpen(false)}
           onSuccess={handleLiftCreated}
         />
       )}

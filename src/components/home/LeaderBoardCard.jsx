@@ -1,10 +1,17 @@
 import { formatDate } from "../../utils/formDate";
 
+const rankColors = [
+  "bg-yellow-400 text-black",
+  "bg-slate-200 text-slate-950",
+  "bg-orange-700 text-white",
+];
+
 function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
   const leaderboards = Array.isArray(leaderboard)
     ? leaderboard
     : (leaderboard?.leaderboards ?? []);
 
+  const topThree = leaderboards.slice(0, 3);
   const exerciseName = leaderboards[0]?.exercise?.name ?? "Unknown exercise";
 
   return (
@@ -27,20 +34,16 @@ function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
         </button>
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
-
-      {!error && isLoading && (
+      {error ? (
+        <p className="text-sm text-red-400">{error}</p>
+      ) : isLoading ? (
         <p className="text-sm text-zinc-500">Loading leaderboard...</p>
-      )}
-
-      {!error && !isLoading && leaderboards.length === 0 && (
+      ) : topThree.length === 0 ? (
         <p className="text-sm text-zinc-500">No leaderboard data.</p>
-      )}
-
-      {!error && !isLoading && (
+      ) : (
         <div className="space-y-3">
-          {leaderboards.map((player, index) => {
-            const position = player.leaderboard ?? index + 1;
+          {topThree.map((player, index) => {
+            const position = index + 1;
 
             return (
               <div
@@ -48,11 +51,7 @@ function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
                 className="grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-2xl border border-zinc-800 bg-black p-4"
               >
                 <div
-                  className={`grid size-10 place-items-center rounded-xl font-black ${
-                    position === 1
-                      ? "bg-yellow-400 text-black"
-                      : "bg-zinc-900 text-zinc-400"
-                  }`}
+                  className={`grid size-10 place-items-center rounded-xl font-black ${rankColors[index]}`}
                 >
                   #{position}
                 </div>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Dumbbell, X } from "lucide-react";
-
 import { apiCreateLiftRecord, apiGetExercises } from "../../api/mainApi";
 
 function SubmitLiftCard({ onClose, onSuccess }) {
@@ -10,80 +9,65 @@ function SubmitLiftCard({ onClose, onSuccess }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchExercises() {
+    const fetchExercises = async () => {
       try {
-        setIsLoadingExercises(true);
-        setError("");
-
         const response = await apiGetExercises();
 
-        console.log("Exercises response:", response.data);
+        const exerciseList =
+          response.data?.data?.exercises ??
+          response.data?.data ??
+          response.data?.exercises ??
+          response.data;
 
-        const responseData = response.data?.data ?? response.data;
-
-        const exerciseList = Array.isArray(responseData)
-          ? responseData
-          : (responseData?.exercises ?? []);
-
-        console.log("Exercise list:", exerciseList);
-
-        setExercises(exerciseList);
-      } catch (requestError) {
-        console.log("Exercise error:", requestError.response?.data);
-
-        setError(
-          requestError.response?.data?.message ?? "Unable to load exercises.",
-        );
+        setExercises(Array.isArray(exerciseList) ? exerciseList : []);
+      } catch (error) {
+        setError(error.response?.data?.message ?? "Unable to load exercises.");
       } finally {
         setIsLoadingExercises(false);
       }
-    }
+    };
 
     fetchExercises();
   }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
+    setError("");
 
     try {
-      setIsSubmitting(true);
-      setError("");
-
       const formData = new FormData(event.currentTarget);
-
-      const caption = formData.get("caption")?.trim();
-      const videoUrl = formData.get("videoUrl")?.trim();
+      const caption = formData.get("caption").trim();
+      const videoUrl = formData.get("videoUrl").trim();
 
       const body = {
         exerciseId: Number(formData.get("exerciseId")),
         weight: Number(formData.get("weight")),
         reps: Number(formData.get("reps")),
-
-        ...(caption && {
-          caption,
-        }),
-
-        ...(videoUrl && {
-          videoUrl,
-        }),
+        ...(caption && { caption }),
+        ...(videoUrl && { videoUrl }),
       };
 
       const response = await apiCreateLiftRecord(body);
 
-      await onSuccess?.(response.data?.data ?? response.data);
-    } catch (requestError) {
-      setError(
-        requestError.response?.data?.message ?? "Unable to submit lift.",
-      );
+      await onSuccess?.(response.data.data);
+    } catch (error) {
+      setError(error.response?.data?.message ?? "Unable to submit lift.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const exercisePlaceholder = isLoadingExercises
+    ? "Loading exercises..."
+    : exercises.length
+      ? "Select exercise"
+      : "No exercises available";
+
   return (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-black/80 px-4 backdrop-blur-sm"
       onClick={onClose}
+      className="fixed inset-0 z-50 grid place-items-center bg-black/80 px-4 backdrop-blur-sm"
     >
       <section
         role="dialog"
@@ -112,8 +96,8 @@ function SubmitLiftCard({ onClose, onSuccess }) {
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
             disabled={isSubmitting}
+            aria-label="Close"
             className="rounded-xl p-2 text-zinc-500 hover:bg-zinc-900 hover:text-white"
           >
             <X size={22} />
@@ -122,21 +106,17 @@ function SubmitLiftCard({ onClose, onSuccess }) {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <label className="block">
-            <span className="mb-2 block text-sm font-bold">Exercise</span>
+            <span className="mb-2 block text-sm font-bold">Main Lift</span>
 
             <select
               name="exerciseId"
               required
               defaultValue=""
               disabled={isLoadingExercises}
-              className="w-full rounded-2xl border border-zinc-800 bg-black px-4 py-3 text-white outline-none focus:border-yellow-400"
+              className="w-full rounded-2xl border border-zinc-800 bg-black px-4 py-3 text-zinc-700 outline-none valid:text-white focus:border-yellow-400"
             >
-              <option value="" disabled className="bg-zinc-950 text-zinc-500">
-                {isLoadingExercises
-                  ? "Loading exercises..."
-                  : exercises.length === 0
-                    ? "No exercises available"
-                    : "Select exercise"}
+              <option value="" disabled>
+                {exercisePlaceholder}
               </option>
 
               {exercises.map((exercise) => (
@@ -152,31 +132,27 @@ function SubmitLiftCard({ onClose, onSuccess }) {
           </label>
 
           <div className="grid grid-cols-2 gap-4">
-            <label className="block">
+            <label>
               <span className="mb-2 block text-sm font-bold">Weight (kg)</span>
-
               <input
                 type="number"
                 name="weight"
                 min="0.1"
                 step="0.1"
                 required
-                placeholder="120"
-                className="w-full rounded-2xl border border-zinc-800 bg-black px-4 py-3 outline-none placeholder:text-zinc-700 focus:border-yellow-400"
+                className="w-full rounded-2xl border border-zinc-800 bg-black px-4 py-3 outline-none focus:border-yellow-400"
               />
             </label>
 
-            <label className="block">
+            <label>
               <span className="mb-2 block text-sm font-bold">Reps</span>
-
               <input
                 type="number"
                 name="reps"
                 min="1"
                 step="1"
                 required
-                placeholder="4"
-                className="w-full rounded-2xl border border-zinc-800 bg-black px-4 py-3 outline-none placeholder:text-zinc-700 focus:border-yellow-400"
+                className="w-full rounded-2xl border border-zinc-800 bg-black px-4 py-3 outline-none focus:border-yellow-400"
               />
             </label>
           </div>
@@ -221,7 +197,7 @@ function SubmitLiftCard({ onClose, onSuccess }) {
             disabled={
               isSubmitting || isLoadingExercises || exercises.length === 0
             }
-            className="w-full rounded-2xl bg-yellow-400 py-4 font-black text-black hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-2xl bg-yellow-400 py-4 font-black text-black hover:bg-yellow-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? "Submitting..." : "Submit Lift"}
           </button>
