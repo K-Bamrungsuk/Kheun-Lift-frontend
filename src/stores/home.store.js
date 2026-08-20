@@ -1,46 +1,74 @@
 import { create } from "zustand";
-import { apiGetUser, apiLeaderboard, apiLiftRecords } from "../api/mainApi";
+import {
+  apiGetUser,
+  apiLiftRecords,
+  apiRandomLeaderboard,
+} from "../api/mainApi";
 
-const getResponseData = (response) => response.data?.data ?? response.data;
+const getResponseData = (response) =>
+  response.data?.data ?? response.data;
 
 export const useHomeStore = create((set) => ({
   user: null,
   activities: [],
-  leaderboard: null,
+  leaderboard: [],
   isLoading: false,
   error: "",
 
-  fetchHomeData: async ({ exerciseId, weightClassId, gender }) => {
+  fetchHomeData: async () => {
     try {
-      set({ isLoading: true, error: "" });
+      set({
+        isLoading: true,
+        error: "",
+      });
 
-      const [userResponse, liftsResponse, leaderboardResponse] =
-        await Promise.all([
-          apiGetUser(),
-          apiLiftRecords(),
-          apiLeaderboard(exerciseId, weightClassId, { gender }),
-        ]);
+      const [
+        userResponse,
+        liftsResponse,
+        leaderboardResponse,
+      ] = await Promise.all([
+        apiGetUser(),
+        apiLiftRecords(),
+        apiRandomLeaderboard(),
+      ]);
 
       const userData = getResponseData(userResponse);
       const liftsData = getResponseData(liftsResponse);
-      const leaderboardData = getResponseData(leaderboardResponse);
+      const leaderboardData =
+        getResponseData(leaderboardResponse);
 
       const liftRecords =
-        liftsData?.liftRecords ?? liftsData?.lifts ?? liftsData;
+        liftsData?.liftRecords ??
+        liftsData?.lifts ??
+        liftsData;
+
+      const randomLeaderboard =
+        leaderboardData?.leaderboards ?? [];
 
       set({
         user: userData?.user ?? userData,
-        activities: Array.isArray(liftRecords) ? liftRecords.slice(0, 3) : [],
-        leaderboard:
-          leaderboardData?.leaderboard ??
-          leaderboardData?.rankings ??
-          leaderboardData,
+
+        activities: Array.isArray(liftRecords)
+          ? liftRecords.slice(0, 3)
+          : [],
+
+        leaderboard: Array.isArray(randomLeaderboard)
+          ? randomLeaderboard
+          : [],
+
         isLoading: false,
       });
     } catch (requestError) {
+      console.log(
+        "Fetch home data error:",
+        requestError.response?.data,
+      );
+
       set({
+        leaderboard: [],
         error:
-          requestError.response?.data?.message ?? "Unable to load home data.",
+          requestError.response?.data?.message ??
+          "Unable to load home data.",
         isLoading: false,
       });
     }

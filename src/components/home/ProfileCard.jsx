@@ -1,4 +1,5 @@
 function ProfileCard({ user, isLoading }) {
+  
   const profileInitial = user?.username?.trim()?.charAt(0).toUpperCase() || "?";
 
   return (
@@ -20,9 +21,8 @@ function ProfileCard({ user, isLoading }) {
           {user?.gender && <span className="capitalize">{user.gender}</span>}
           {user?.gender && user?.bodyWeight != null}
           {user?.bodyWeight != null && <span>{user.bodyWeight} kg</span>}
-          {user?.email && (
-            <span className="text-yellow-400">{user.email}</span>
-          )}
+          {user?.email && <span className="text-yellow-400">{user.email}</span>}
+          {user?.weightClass?.name && <span className="text-yellow-400">Class: {user.weightClass.name}</span>}
         </div>
       </div>
     </section>

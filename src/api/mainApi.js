@@ -18,14 +18,17 @@ mainApi.interceptors.request.use((config) => {
   return config;
 });
 
+//Register Page
 export const apiRegister = (body) => mainApi.post("/auth/register", body);
 
+//Login Page
 export const apiLogin = (body) => mainApi.post("/auth/login", body);
 
+//Home Page
 export const apiGetUser = (body) => mainApi.get("/users/me", body);
 export const apiLiftRecords = (body) => mainApi.get("/lifts/me", body);
 export const apiLeaderboard = (exerciseId, weightClassId, params = {}) =>
-  mainApi.get(
-    `/leaderboards/exercises/${exerciseId}/weight-classes/${weightClassId}`,
-    { params },
-  );
+  mainApi.get(`/leaderboards/exercises/${exerciseId}/weight-classes/${weightClassId}`,{ params },);
+export const apiRandomLeaderboard = () => mainApi.get("/leaderboards/random")
+export const apiCreateLiftRecord = (body) => mainApi.post("/lifts", body)
+export const apiGetExercises = () => mainApi.get("/exercises")
