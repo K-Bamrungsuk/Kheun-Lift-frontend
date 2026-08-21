@@ -1,10 +1,5 @@
 import { formatDate } from "../../utils/formDate";
-
-const rankColors = [
-  "bg-yellow-400 text-black",
-  "bg-slate-200 text-slate-950",
-  "bg-orange-700 text-white",
-];
+import { rankColors } from "../../utils/rankColor";
 
 function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
   const leaderboards = Array.isArray(leaderboard)

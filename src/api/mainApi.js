@@ -28,7 +28,13 @@ export const apiLogin = (body) => mainApi.post("/auth/login", body);
 export const apiGetUser = (body) => mainApi.get("/users/me", body);
 export const apiLiftRecords = (body) => mainApi.get("/lifts/me", body);
 export const apiLeaderboard = (exerciseId, weightClassId, params = {}) =>
-  mainApi.get(`/leaderboards/exercises/${exerciseId}/weight-classes/${weightClassId}`,{ params },);
-export const apiRandomLeaderboard = () => mainApi.get("/leaderboards/random")
-export const apiCreateLiftRecord = (body) => mainApi.post("/lifts", body)
-export const apiGetExercises = () => mainApi.get("/exercises")
+  mainApi.get(
+    `/leaderboards/exercises/${exerciseId}/weight-classes/${weightClassId}`,
+    { params },
+  );
+export const apiRandomLeaderboard = () => mainApi.get("/leaderboards/random");
+export const apiCreateLiftRecord = (body) => mainApi.post("/lifts", body);
+export const apiGetExercises = () => mainApi.get("/exercises");
+
+//Profile Page
+export const apiEditUser = (body) => mainApi.patch("/users/me", body);

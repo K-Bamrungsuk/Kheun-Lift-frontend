@@ -1,10 +1,34 @@
-import React from "react";
+import { useState } from "react";
 import { Plus, Dumbbell } from "lucide-react";
-import navigation from "../data/data.navigation";
+import { useNavigate } from "react-router-dom";
+import navigation from "../data/navigation";
+import SubmitLiftCard from "./SubmitLiftCard";
 
-function Navbar({ activePage = "Home", onNavigate }) {
+const paths = {
+  Home: "/home",
+  Rank: "/leaderboard",
+  Profile: "/profile",
+};
+
+function Navbar({ activePage = "Home", onLiftCreated }) {
+  const navigate = useNavigate();
+
+  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+
   const goTo = (name) => {
-    onNavigate?.(name);
+    if (name === "Add Lift") {
+      setIsSubmitOpen(true);
+      return;
+    }
+
+    if (paths[name]) {
+      navigate(paths[name]);
+    }
+  };
+
+  const handleLiftCreated = async () => {
+    await onLiftCreated?.();
+    setIsSubmitOpen(false);
   };
 
   return (
@@ -55,7 +79,6 @@ function Navbar({ activePage = "Home", onNavigate }) {
         </div>
       </header>
 
-
       {/* Mobile navbar */}
       <nav className="fixed bottom-4 left-1/2 z-50 flex w-[calc(100%-32px)] max-w-md -translate-x-1/2 items-center justify-around rounded-3xl border border-zinc-800 bg-zinc-950/95 px-3 py-3 shadow-2xl backdrop-blur md:hidden">
         {navigation.slice(0, 2).map(({ name, icon: Icon }) => (
@@ -95,6 +118,13 @@ function Navbar({ activePage = "Home", onNavigate }) {
           </button>
         ))}
       </nav>
+
+      {isSubmitOpen && (
+        <SubmitLiftCard
+          onClose={() => setIsSubmitOpen(false)}
+          onSuccess={handleLiftCreated}
+        />
+      )}
     </>
   );
 }

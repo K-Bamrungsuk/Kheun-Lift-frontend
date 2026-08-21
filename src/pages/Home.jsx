@@ -2,16 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
+import SubmitLiftCard from "../components/SubmitLiftCard";
 import HomeActions from "../components/home/HomeActions";
 import HomeHeader from "../components/home/HomeHeader";
-import LeaderboardCard from "../components/home/LeaderboardCard";
+import LeaderboardCard from "../components/home/LeaderBoardCard";
 import ProfileCard from "../components/home/ProfileCard";
 import RecentActivity from "../components/home/RecentActivity";
-import SubmitLiftCard from "../components/home/SubmitLiftCard";
 import { useHomeStore } from "../stores/home.store";
 
 function Home() {
   const navigate = useNavigate();
+
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
 
   const { user, activities, leaderboard, isLoading, error, fetchHomeData } =
@@ -21,7 +22,9 @@ function Home() {
     fetchHomeData();
 
     const refreshWhenVisible = () => {
-      if (document.visibilityState === "visible") fetchHomeData();
+      if (document.visibilityState === "visible") {
+        fetchHomeData();
+      }
     };
 
     document.addEventListener("visibilitychange", refreshWhenVisible);
@@ -32,11 +35,6 @@ function Home() {
 
   const goToLeaderboard = () => navigate("/leaderboard");
 
-  const handleNavbarNavigate = (name) => {
-    if (name === "Add Lift") setIsSubmitOpen(true);
-    if (name === "Rank") goToLeaderboard();
-  };
-
   const handleLiftCreated = async () => {
     await fetchHomeData();
     setIsSubmitOpen(false);
@@ -44,7 +42,7 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Navbar activePage="Home" onNavigate={handleNavbarNavigate} />
+      <Navbar activePage="Home" onLiftCreated={fetchHomeData} />
 
       <main className="mx-auto max-w-md space-y-4 px-4 pb-28 pt-6 md:max-w-6xl md:px-8 md:pb-10 md:pt-10">
         <HomeHeader />
@@ -57,6 +55,7 @@ function Home() {
               activities={activities}
               isLoading={isLoading}
               error={error}
+              onViewAll={() => navigate("/profile")}
             />
           </div>
 

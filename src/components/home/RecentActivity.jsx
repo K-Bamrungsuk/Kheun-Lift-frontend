@@ -1,7 +1,7 @@
 import { formatDate } from "../../utils/formDate";
 import { statusColors, statusLabels } from "../../utils/statusVerifying";
 
-function RecentActivity({ activities = [], isLoading, error }) {
+function RecentActivity({ activities = [], isLoading, error, onViewAll }) {
   const message =
     error ||
     (isLoading
@@ -15,7 +15,11 @@ function RecentActivity({ activities = [], isLoading, error }) {
       <div className="mb-3 flex justify-between">
         <h2 className="font-bold">Recent Activity</h2>
 
-        <button type="button" className="text-xs text-yellow-400">
+        <button
+          type="button"
+          onClick={onViewAll}
+          className="text-xs text-yellow-400"
+        >
           View all
         </button>
       </div>
