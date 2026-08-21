@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import { useOutletContext } from "react-router-dom";
+
 import EditUserCard from "../components/profile/EditUserCard";
 import PersonalRecords from "../components/profile/PersonalRecords";
 import ProfileActivity from "../components/profile/ProfileActivity";
@@ -10,6 +11,8 @@ import { useAuthStore } from "../stores/auth.store";
 const getData = (response) => response.data?.data ?? response.data;
 
 function Profile() {
+  const { refreshKey } = useOutletContext();
+
   const token = useAuthStore((state) => state.token);
 
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -24,12 +27,15 @@ function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        setError("");
+
         const [userResponse, liftsResponse] = await Promise.all([
           apiGetUser(),
           apiLiftRecords(),
         ]);
 
         const userData = getData(userResponse);
+
         const liftsData = getData(liftsResponse);
 
         setUser(userData?.user ?? userData);
@@ -45,9 +51,9 @@ function Profile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [refreshKey]);
 
-  const hdlSave = async (body) => {
+  const handleSave = async (body) => {
     try {
       setIsSaving(true);
       setError("");
@@ -77,35 +83,31 @@ function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <Navbar activePage="Profile" />
+    <main className="mx-auto max-w-4xl space-y-4 px-4 pb-28 pt-6 md:px-8 md:pb-10 md:pt-10">
+      {isLoading ? (
+        <p className="text-zinc-400">Loading profile...</p>
+      ) : user ? (
+        <>
+          <ProfileHeader user={user} onEdit={openEdit} />
 
-      <main className="mx-auto max-w-4xl space-y-4 px-4 pb-28 pt-6 md:px-8 md:pb-10 md:pt-10">
-        {isLoading ? (
-          <p className="text-zinc-400">Loading profile...</p>
-        ) : user ? (
-          <>
-            <ProfileHeader user={user} onEdit={openEdit} />
+          <PersonalRecords records={records} />
 
-            <PersonalRecords records={records} />
-
-            <ProfileActivity records={records} />
-          </>
-        ) : (
-          <p className="text-red-400">{error}</p>
-        )}
-      </main>
+          <ProfileActivity records={records} />
+        </>
+      ) : (
+        <p className="text-red-400">{error}</p>
+      )}
 
       {isEditOpen && (
         <EditUserCard
           user={user}
-          onSave={hdlSave}
+          onSave={handleSave}
           onClose={() => setIsEditOpen(false)}
           isSaving={isSaving}
           error={error}
         />
       )}
-    </div>
+    </main>
   );
 }
 

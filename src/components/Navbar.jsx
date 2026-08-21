@@ -1,35 +1,11 @@
-import { useState } from "react";
-import { Plus, Dumbbell } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Dumbbell, Plus } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import navigation from "../data/navigation";
-import SubmitLiftCard from "./SubmitLiftCard";
 
-const paths = {
-  Home: "/home",
-  Rank: "/leaderboard",
-  Profile: "/profile",
-};
-
-function Navbar({ activePage = "Home", onLiftCreated }) {
+function Navbar({ onSubmitLift }) {
   const navigate = useNavigate();
-
-  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
-
-  const goTo = (name) => {
-    if (name === "Add Lift") {
-      setIsSubmitOpen(true);
-      return;
-    }
-
-    if (paths[name]) {
-      navigate(paths[name]);
-    }
-  };
-
-  const handleLiftCreated = async () => {
-    await onLiftCreated?.();
-    setIsSubmitOpen(false);
-  };
+  const { pathname } = useLocation();
 
   return (
     <>
@@ -47,18 +23,21 @@ function Navbar({ activePage = "Home", onLiftCreated }) {
           </div>
 
           <nav className="flex items-center gap-2">
-            {navigation.map(({ name, icon: Icon }) => {
-              const isActive = name === activePage;
+            {navigation.map(({ name, path, icon: Icon, disabled }) => {
+              const isActive = pathname === path;
 
               return (
                 <button
                   key={name}
                   type="button"
-                  onClick={() => goTo(name)}
+                  onClick={() => navigate(path)}
+                  disabled={disabled}
                   className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold ${
-                    isActive
-                      ? "bg-yellow-400 text-black"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                    disabled
+                      ? "cursor-not-allowed text-zinc-700"
+                      : isActive
+                        ? "bg-yellow-400 text-black"
+                        : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
                   }`}
                 >
                   <Icon size={18} />
@@ -69,7 +48,7 @@ function Navbar({ activePage = "Home", onLiftCreated }) {
 
             <button
               type="button"
-              onClick={() => goTo("Add Lift")}
+              onClick={onSubmitLift}
               className="ml-2 flex items-center gap-2 rounded-xl bg-yellow-400 px-4 py-2 text-sm font-black text-black hover:bg-amber-100"
             >
               <Plus size={18} />
@@ -81,14 +60,19 @@ function Navbar({ activePage = "Home", onLiftCreated }) {
 
       {/* Mobile navbar */}
       <nav className="fixed bottom-4 left-1/2 z-50 flex w-[calc(100%-32px)] max-w-md -translate-x-1/2 items-center justify-around rounded-3xl border border-zinc-800 bg-zinc-950/95 px-3 py-3 shadow-2xl backdrop-blur md:hidden">
-        {navigation.slice(0, 2).map(({ name, icon: Icon }) => (
+        {navigation.slice(0, 2).map(({ name, path, icon: Icon, disabled }) => (
           <button
             key={name}
             type="button"
-            onClick={() => goTo(name)}
+            onClick={() => navigate(path)}
+            disabled={disabled}
             aria-label={name}
             className={
-              name === activePage ? "text-yellow-400" : "text-zinc-500"
+              disabled
+                ? "cursor-not-allowed text-zinc-700"
+                : pathname === path
+                  ? "text-yellow-400"
+                  : "text-zinc-500"
             }
           >
             <Icon size={22} />
@@ -97,34 +81,32 @@ function Navbar({ activePage = "Home", onLiftCreated }) {
 
         <button
           type="button"
-          onClick={() => goTo("Add Lift")}
+          onClick={onSubmitLift}
           aria-label="Add Lift"
           className="-mt-9 grid size-14 place-items-center rounded-full border-4 border-black bg-yellow-400 text-black"
         >
           <Plus size={28} />
         </button>
 
-        {navigation.slice(2).map(({ name, icon: Icon }) => (
+        {navigation.slice(2).map(({ name, path, icon: Icon, disabled }) => (
           <button
             key={name}
             type="button"
-            onClick={() => goTo(name)}
+            onClick={() => navigate(path)}
+            disabled={disabled}
             aria-label={name}
             className={
-              name === activePage ? "text-yellow-400" : "text-zinc-500"
+              disabled
+                ? "cursor-not-allowed text-zinc-700"
+                : pathname === path
+                  ? "text-yellow-400"
+                  : "text-zinc-500"
             }
           >
             <Icon size={22} />
           </button>
         ))}
       </nav>
-
-      {isSubmitOpen && (
-        <SubmitLiftCard
-          onClose={() => setIsSubmitOpen(false)}
-          onSuccess={handleLiftCreated}
-        />
-      )}
     </>
   );
 }

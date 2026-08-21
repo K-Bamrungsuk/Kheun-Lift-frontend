@@ -1,27 +1,26 @@
 import {
   createBrowserRouter,
   Navigate,
-  Outlet,
   RouterProvider,
 } from "react-router-dom";
-import Login from "../pages/Login";
-import Home from "../pages/Home";
-import Profile from "../pages/Profile";
-import Register from "../pages/Register";
-import Public from "../pages/Public";
-import Leaderboard from "../pages/Leaderboard";
 
-import ProtectRoute from "./ProtectRoute";
-import GuestRoute from "./GuestRoute";
+import MainLayout from "../layouts/MainLayouts";
+import Home from "../pages/Home";
+import Leaderboard from "../pages/Leaderboard";
+import Login from "../pages/Login";
+import Profile from "../pages/Profile";
+import Public from "../pages/Public";
+import Register from "../pages/Register";
+
+import GuestRoute from "../routes/GuestRoute";
+import ProtectRoute from "../routes/ProtectRoute";
 
 const router = createBrowserRouter([
-  // Public
   {
     path: "/",
     element: <Public />,
   },
 
-  // Guest: Not loging in
   {
     element: <GuestRoute />,
     children: [
@@ -36,22 +35,26 @@ const router = createBrowserRouter([
     ],
   },
 
-  // User: login as a user
   {
     element: <ProtectRoute />,
     children: [
       {
-        path: "/home",
-        element: <Home />,
+        element: <MainLayout />,
+        children: [
+          {
+            path: "/home",
+            element: <Home />,
+          },
+          {
+            path: "/profile",
+            element: <Profile />,
+          },
+          {
+            path: "/leaderboard",
+            element: <Leaderboard />,
+          },
+        ],
       },
-      {
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
-        path: "/leaderboard",
-        element: <Leaderboard/>
-      }
     ],
   },
 
@@ -60,7 +63,6 @@ const router = createBrowserRouter([
     element: <Navigate to="/" replace />,
   },
 ]);
-
 
 function AppRouter() {
   return <RouterProvider router={router} />;
