@@ -1,71 +1,19 @@
-import { useEffect, useState } from "react";
 import { Dumbbell, X } from "lucide-react";
-import { apiCreateLiftRecord, apiGetExercises } from "../api/mainApi";
+
+import useSubmitLift from "../hooks/useSubmitLift";
 
 const inputClass =
   "w-full rounded-2xl border border-zinc-800 bg-black px-4 py-3 outline-none focus:border-yellow-400";
 
-function SubmitLiftCard({ onClose, onSuccess }) {
-  const [exercises, setExercises] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchExercises = async () => {
-      try {
-        const response = await apiGetExercises();
-
-        const data = response.data?.data ?? response.data;
-
-        const exerciseList = data?.exercises ?? data;
-
-        setExercises(Array.isArray(exerciseList) ? exerciseList : []);
-      } catch (err) {
-        setError(err.response?.data?.message ?? "Unable to load exercises.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchExercises();
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError("");
-
-    try {
-      const form = new FormData(e.currentTarget);
-
-      const caption = form.get("caption").trim();
-
-      const videoUrl = form.get("videoUrl").trim();
-
-      const body = {
-        exerciseId: Number(form.get("exerciseId")),
-        weight: Number(form.get("weight")),
-        reps: Number(form.get("reps")),
-        ...(caption && { caption }),
-        ...(videoUrl && { videoUrl }),
-      };
-
-      const response = await apiCreateLiftRecord(body);
-
-      await onSuccess?.(response.data?.data);
-    } catch (err) {
-      setError(err.response?.data?.message ?? "Unable to submit lift.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const placeholder = isLoading
-    ? "Loading exercises..."
-    : exercises.length
-      ? "Select exercise"
-      : "No exercises available";
+function SubmitLiftModal({ onClose, onSuccess }) {
+  const {
+    exercises,
+    isLoading,
+    isSubmitting,
+    error,
+    placeholder,
+    handleSubmit,
+  } = useSubmitLift(onSuccess);
 
   return (
     <div
@@ -75,7 +23,7 @@ function SubmitLiftCard({ onClose, onSuccess }) {
       <section
         role="dialog"
         aria-modal="true"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
         className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-950 p-5 shadow-2xl md:p-8"
       >
         <header className="mb-6 flex items-center justify-between border-b border-zinc-800 pb-5">
@@ -142,7 +90,7 @@ function SubmitLiftCard({ onClose, onSuccess }) {
                 pattern="[0-9]+([.][0-9]+)?"
                 placeholder="e.g. 100.5"
                 required
-                className={inputClass}
+                className={`${inputClass} text-zinc-500`}
               />
             </label>
 
@@ -156,7 +104,7 @@ function SubmitLiftCard({ onClose, onSuccess }) {
                 pattern="[1-9][0-9]*"
                 placeholder="e.g. 5"
                 required
-                className={inputClass}
+                className={`${inputClass} text-zinc-500`}
               />
             </label>
           </div>
@@ -212,4 +160,4 @@ function SubmitLiftCard({ onClose, onSuccess }) {
   );
 }
 
-export default SubmitLiftCard;
+export default SubmitLiftModal;

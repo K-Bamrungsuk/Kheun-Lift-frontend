@@ -1,7 +1,7 @@
 import { formatDate } from "../../utils/formDate";
 import { statusColors, statusLabels } from "../../utils/statusVerifying";
 
-function ProfileActivity({ records = [] }) {
+function ProfileActivity({ records = [], onSelectLift }) {
   return (
     <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
       <h2 className="mb-3 font-bold">All Activity</h2>
@@ -15,9 +15,11 @@ function ProfileActivity({ records = [] }) {
           const status = record.status ?? "pending";
 
           return (
-            <div
+            <button
               key={record.id}
-              className="flex items-center justify-between border-t border-zinc-800 py-4"
+              type="button"
+              onClick={() => onSelectLift(record)}
+              className="flex w-full items-center justify-between border-t border-b border-zinc-800 py-4 text-left transition hover:border-zinc-500"
             >
               <div className="flex items-center gap-3">
                 <span
@@ -45,7 +47,7 @@ function ProfileActivity({ records = [] }) {
               <strong className="whitespace-nowrap text-xs">
                 {record.weight} kg
               </strong>
-            </div>
+            </button>
           );
         })
       )}

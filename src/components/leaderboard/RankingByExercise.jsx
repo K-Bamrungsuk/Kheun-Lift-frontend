@@ -3,6 +3,7 @@ import RankingRow from "./RankingRow";
 function RankingByExercise({
   exercise,
   records = [],
+  currentUserId,
   expanded,
   onToggle,
   onSelectLift,
@@ -41,6 +42,7 @@ function RankingByExercise({
             <RankingRow
               key={record.id}
               record={record}
+              currentUserId={currentUserId}
               onClick={() => onSelectLift(record)}
             />
           ))}

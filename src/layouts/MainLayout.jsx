@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
-import SubmitLiftCard from "../components/SubmitLiftCard";
+import SubmitLiftModal from "../components/SubmitLiftModal";
 
 function MainLayout() {
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
@@ -26,7 +26,7 @@ function MainLayout() {
       />
 
       {isSubmitOpen && (
-        <SubmitLiftCard
+        <SubmitLiftModal
           onClose={() => setIsSubmitOpen(false)}
           onSuccess={handleLiftCreated}
         />

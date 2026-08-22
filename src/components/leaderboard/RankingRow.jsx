@@ -2,8 +2,11 @@ import { rankColors } from "../../utils/rankColor";
 
 const defaultRankColor = "border-zinc-800 bg-zinc-900 text-zinc-400";
 
-function RankingRow({ record, onClick }) {
+function RankingRow({ record, currentUserId, onClick }) {
   const rankColor = rankColors[record.rank - 1] ?? defaultRankColor;
+
+  const isCurrentUser =
+    record.userId === currentUserId || record.user?.id === currentUserId;
 
   return (
     <button
@@ -18,9 +21,17 @@ function RankingRow({ record, onClick }) {
       </div>
 
       <div className="min-w-0">
-        <p className="truncate text-sm font-bold text-white">
-          {record.user?.username ?? "Unknown user"}
-        </p>
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="truncate text-sm font-bold text-white">
+            {record.user?.username ?? "Unknown user"}
+          </p>
+
+          {isCurrentUser && (
+            <span className="shrink-0 rounded-full bg-yellow-400/15 px-2 py-0.5 text-[10px] font-black text-yellow-400">
+              YOU
+            </span>
+          )}
+        </div>
 
         <p className="mt-1 text-xs text-zinc-500">
           Body weight: {record.user?.bodyWeight ?? "-"} kg

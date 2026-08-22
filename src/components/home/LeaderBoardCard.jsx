@@ -1,7 +1,14 @@
 import { formatDate } from "../../utils/formDate";
 import { rankColors } from "../../utils/rankColor";
 
-function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
+function LeaderboardCard({
+  leaderboard,
+  currentUserId,
+  isLoading,
+  error,
+  onViewAll,
+  onSelectLift,
+}) {
   const leaderboards = Array.isArray(leaderboard)
     ? leaderboard
     : (leaderboard?.leaderboards ?? []);
@@ -40,10 +47,21 @@ function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
           {topThree.map((player, index) => {
             const position = index + 1;
 
+            const isCurrentUser =
+              player.userId === currentUserId ||
+              player.user?.id === currentUserId;
+
             return (
-              <div
+              <button
                 key={player.id}
-                className="grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-2xl border border-zinc-800 bg-black p-4"
+                type="button"
+                onClick={() =>
+                  onSelectLift({
+                    ...player,
+                    rank: player.rank ?? position,
+                  })
+                }
+                className="grid w-full grid-cols-[42px_1fr_auto] items-center gap-3 rounded-2xl border border-zinc-800 bg-black p-4 text-left transition hover:border-zinc-500"
               >
                 <div
                   className={`grid size-10 place-items-center rounded-xl font-black ${rankColors[index]}`}
@@ -52,9 +70,17 @@ function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold">
-                    {player.user?.username ?? "Unknown user"}
-                  </p>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="truncate text-sm font-bold">
+                      {player.user?.username ?? "Unknown user"}
+                    </p>
+
+                    {isCurrentUser && (
+                      <span className="shrink-0 rounded-full bg-yellow-400/15 px-2 py-0.5 text-[10px] font-black text-yellow-400">
+                        YOU
+                      </span>
+                    )}
+                  </div>
 
                   <p className="text-xs text-zinc-500">
                     {formatDate(player.createdAt)}
@@ -68,7 +94,7 @@ function LeaderboardCard({ leaderboard, isLoading, error, onViewAll }) {
                 <strong className="whitespace-nowrap text-sm text-yellow-400">
                   {player.weight ?? "-"} kg
                 </strong>
-              </div>
+              </button>
             );
           })}
         </div>

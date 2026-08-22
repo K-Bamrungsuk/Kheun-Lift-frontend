@@ -87,7 +87,7 @@ function EditUserCard({ user, onClose, onSave, isSaving, error }) {
                 name="gender"
                 defaultValue={user?.gender || ""}
                 required
-                className={inputClass}
+                className={`${inputClass} appearance-none`}
               >
                 <option value="" disabled>
                   Select gender
@@ -122,10 +122,11 @@ function EditUserCard({ user, onClose, onSave, isSaving, error }) {
                 type="number"
                 name="height"
                 min="1"
+                max="999"
                 step="0.1"
                 defaultValue={user?.height}
                 required
-                className={inputClass}
+                className={`${inputClass} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
               />
             </label>
 
@@ -136,10 +137,11 @@ function EditUserCard({ user, onClose, onSave, isSaving, error }) {
                 type="number"
                 name="bodyWeight"
                 min="1"
+                max="999"
                 step="0.1"
                 defaultValue={user?.bodyWeight}
                 required
-                className={inputClass}
+                className={`${inputClass} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
               />
             </label>
           </div>

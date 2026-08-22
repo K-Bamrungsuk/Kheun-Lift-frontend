@@ -1,20 +1,27 @@
 import { useState } from "react";
 import { ExternalLink, Play, X } from "lucide-react";
 
+import EditLiftDetail from "./EditLiftDetail";
+import { useAuthStore } from "../stores/auth.store";
 import {
   getYoutubeEmbedUrl,
   getYoutubeId,
   getYoutubeThumbnail,
-} from "../../utils/youtube";
+} from "../utils/youtube";
 
 function LiftDetailModal({ lift, onClose }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const userId = useAuthStore((state) => state.user?.id);
 
   if (!lift) return null;
+
+  const isOwner = lift.userId === userId || lift.user?.id === userId;
 
   const youtubeId = getYoutubeId(lift.videoUrl);
   const thumbnailUrl = getYoutubeThumbnail(youtubeId);
   const embedUrl = getYoutubeEmbedUrl(youtubeId);
+
+  const details = [lift.exercise?.name, lift.weightClass?.name].filter(Boolean);
 
   return (
     <div
@@ -25,19 +32,23 @@ function LiftDetailModal({ lift, onClose }) {
         className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-950 p-5 text-white shadow-2xl md:p-7"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mb-5 flex items-start justify-between">
+        <header className="mb-5 flex items-start justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">
-              Rank #{lift.rank}
-            </p>
+            {lift.rank && (
+              <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">
+                Rank #{lift.rank}
+              </p>
+            )}
 
             <h2 className="mt-1 text-2xl font-black">
-              {lift.user?.username ?? "Unknown user"}
+              {lift.user?.username ?? lift.exercise?.name ?? "Lift Details"}
             </h2>
 
-            <p className="mt-1 text-sm text-zinc-500">
-              {lift.exercise?.name} · {lift.weightClass?.name}
-            </p>
+            {details.length > 0 && (
+              <p className="mt-1 text-sm text-zinc-500">
+                {details.join(" · ")}
+              </p>
+            )}
           </div>
 
           <button
@@ -48,12 +59,11 @@ function LiftDetailModal({ lift, onClose }) {
           >
             <X size={20} />
           </button>
-        </div>
+        </header>
 
         <div className="mb-5 grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-zinc-800 bg-black p-4">
             <p className="text-xs text-zinc-500">Weight</p>
-
             <p className="mt-1 text-xl font-black text-yellow-400">
               {lift.weight} kg
             </p>
@@ -61,7 +71,6 @@ function LiftDetailModal({ lift, onClose }) {
 
           <div className="rounded-2xl border border-zinc-800 bg-black p-4">
             <p className="text-xs text-zinc-500">Repetitions</p>
-
             <p className="mt-1 text-xl font-black">{lift.reps}</p>
           </div>
         </div>
@@ -79,7 +88,7 @@ function LiftDetailModal({ lift, onClose }) {
             />
 
             <span className="absolute inset-0 grid place-items-center">
-              <span className="grid size-16 place-items-center rounded-full bg-yellow-400 text-black shadow-xl">
+              <span className="grid size-16 place-items-center rounded-full bg-yellow-400 text-black">
                 <Play size={28} fill="currentColor" />
               </span>
             </span>
@@ -115,33 +124,29 @@ function LiftDetailModal({ lift, onClose }) {
         )}
 
         <div className="space-y-4 rounded-2xl border border-zinc-800 bg-black p-5">
-          <div>
-            <p className="text-xs text-zinc-500">Caption</p>
+          <EditLiftDetail lift={lift} canEdit={isOwner} />
 
-            <p className="mt-1 text-sm text-zinc-200">
-              {lift.caption || "No caption"}
-            </p>
-          </div>
+          {lift.status && (
+            <div>
+              <p className="text-xs text-zinc-500">Status</p>
+              <p className="mt-1 text-sm font-bold capitalize text-green-400">
+                {lift.status}
+              </p>
+            </div>
+          )}
 
-          <div>
-            <p className="text-xs text-zinc-500">Status</p>
-
-            <p className="mt-1 text-sm font-bold capitalize text-green-400">
-              {lift.status}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs text-zinc-500">Submitted</p>
-
-            <p className="mt-1 text-sm text-zinc-200">
-              {new Date(lift.createdAt).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-            </p>
-          </div>
+          {lift.createdAt && (
+            <div>
+              <p className="text-xs text-zinc-500">Submitted</p>
+              <p className="mt-1 text-sm text-zinc-200">
+                {new Date(lift.createdAt).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </div>

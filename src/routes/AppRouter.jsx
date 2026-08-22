@@ -4,7 +4,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import MainLayout from "../layouts/MainLayouts";
+import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import Leaderboard from "../pages/Leaderboard";
 import Login from "../pages/Login";

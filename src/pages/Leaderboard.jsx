@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
 import LeaderboardHeader from "../components/leaderboard/LeaderBoardHeader";
-import LiftDetailModal from "../components/leaderboard/LiftDetailModal";
 import RankingByExercise from "../components/leaderboard/RankingByExercise";
 import WeightClassList from "../components/leaderboard/WeightClassList";
+import LiftDetailModal from "../components/LiftDetailModal";
 import useLeaderboard from "../hooks/useLeaderboard";
 
 function Leaderboard() {
@@ -105,6 +105,7 @@ function Leaderboard() {
                   key={exercise.id}
                   exercise={exercise}
                   records={rankings[exercise.id] ?? []}
+                  currentUserId={user.id}
                   expanded={Boolean(expanded[exercise.id])}
                   onToggle={() => handleToggleExpanded(exercise.id)}
                   onSelectLift={setSelectedLift}
