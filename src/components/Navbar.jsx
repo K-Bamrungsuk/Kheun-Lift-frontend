@@ -2,10 +2,21 @@ import { Dumbbell, Plus } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import navigation from "../data/navigation";
+import NavItem from "./navbar/NavItem";
 
 function Navbar({ onSubmitLift }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+
+  const renderNavItem = (item, variant) => (
+    <NavItem
+      key={item.name}
+      item={item}
+      variant={variant}
+      isActive={pathname === item.path}
+      onNavigate={navigate}
+    />
+  );
 
   return (
     <>
@@ -23,28 +34,7 @@ function Navbar({ onSubmitLift }) {
           </div>
 
           <nav className="flex items-center gap-2">
-            {navigation.map(({ name, path, icon: Icon, disabled }) => {
-              const isActive = pathname === path;
-
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => navigate(path)}
-                  disabled={disabled}
-                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold ${
-                    disabled
-                      ? "cursor-not-allowed text-zinc-700"
-                      : isActive
-                        ? "bg-yellow-400 text-black"
-                        : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
-                  }`}
-                >
-                  <Icon size={18} />
-                  {name}
-                </button>
-              );
-            })}
+            {navigation.map((item) => renderNavItem(item, "desktop"))}
 
             <button
               type="button"
@@ -60,24 +50,7 @@ function Navbar({ onSubmitLift }) {
 
       {/* Mobile navbar */}
       <nav className="fixed bottom-4 left-1/2 z-50 flex w-[calc(100%-32px)] max-w-md -translate-x-1/2 items-center justify-around rounded-3xl border border-zinc-800 bg-zinc-950/95 px-3 py-3 shadow-2xl backdrop-blur md:hidden">
-        {navigation.slice(0, 2).map(({ name, path, icon: Icon, disabled }) => (
-          <button
-            key={name}
-            type="button"
-            onClick={() => navigate(path)}
-            disabled={disabled}
-            aria-label={name}
-            className={
-              disabled
-                ? "cursor-not-allowed text-zinc-700"
-                : pathname === path
-                  ? "text-yellow-400"
-                  : "text-zinc-500"
-            }
-          >
-            <Icon size={22} />
-          </button>
-        ))}
+        {navigation.slice(0, 2).map((item) => renderNavItem(item, "mobile"))}
 
         <button
           type="button"
@@ -88,24 +61,7 @@ function Navbar({ onSubmitLift }) {
           <Plus size={28} />
         </button>
 
-        {navigation.slice(2).map(({ name, path, icon: Icon, disabled }) => (
-          <button
-            key={name}
-            type="button"
-            onClick={() => navigate(path)}
-            disabled={disabled}
-            aria-label={name}
-            className={
-              disabled
-                ? "cursor-not-allowed text-zinc-700"
-                : pathname === path
-                  ? "text-yellow-400"
-                  : "text-zinc-500"
-            }
-          >
-            <Icon size={22} />
-          </button>
-        ))}
+        {navigation.slice(2).map((item) => renderNavItem(item, "mobile"))}
       </nav>
     </>
   );

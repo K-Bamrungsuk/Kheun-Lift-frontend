@@ -1,4 +1,4 @@
-import { Scale, Trophy, UserRound } from "lucide-react";
+import { Weight, Trophy, UserRound } from "lucide-react";
 
 function ProfileCard({ user, isLoading }) {
   const profileInitial = user?.username?.trim()?.charAt(0).toUpperCase() || "?";
@@ -13,7 +13,7 @@ function ProfileCard({ user, isLoading }) {
     {
       label: "Body weight",
       value: user?.bodyWeight != null ? `${user.bodyWeight} kg` : null,
-      icon: Scale,
+      icon: Weight,
     },
     {
       label: "Weight class",
