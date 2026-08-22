@@ -1,5 +1,5 @@
 import { formatDate } from "../../utils/formDate";
-import { statusColors, statusLabels } from "../../utils/statusVerifying";
+import { statusColors, statusLabels } from "../../constants/statusVerifying";
 
 function ProfileActivity({ records = [], onSelectLift }) {
   return (

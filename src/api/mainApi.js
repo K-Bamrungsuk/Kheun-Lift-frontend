@@ -48,4 +48,6 @@ export const apiGetWeightClasses = (gender) =>
   });
 
 //Edit User Lift Record
-export const apiEditLiftRecord = (id, body) => mainApi.patch(`/lifts/${id}`, body);
+export const apiEditLiftRecord = (id, body) =>
+  mainApi.patch(`/lifts/${id}`, body);
+export const apiDeleteLiftRecord = (id) => mainApi.delete(`/lifts/${id}`);

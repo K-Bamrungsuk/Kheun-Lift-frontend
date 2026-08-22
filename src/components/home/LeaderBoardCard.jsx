@@ -1,5 +1,5 @@
 import { formatDate } from "../../utils/formDate";
-import { rankColors } from "../../utils/rankColor";
+import { rankColors } from "../../constants/rankColor";
 
 function LeaderboardCard({
   leaderboard,

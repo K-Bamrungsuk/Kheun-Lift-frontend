@@ -1,5 +1,5 @@
 import { Trophy } from "lucide-react";
-import { rankColors } from "../../utils/rankColor";
+import { rankColors } from "../../constants/rankColor";
 
 function RankingPreview({ leaderboard, isLoading, onRequireLogin }) {
   const topThree = leaderboard?.leaderboards?.slice(0, 3) ?? [];

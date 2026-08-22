@@ -1,4 +1,4 @@
-import { rankColors } from "../../utils/rankColor";
+import { rankColors } from "../../constants/rankColor";
 
 const defaultRankColor = "border-zinc-800 bg-zinc-900 text-zinc-400";
 

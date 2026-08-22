@@ -1,27 +1,39 @@
 import { useState } from "react";
-import { ExternalLink, Play, X } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 
+import DeleteConfirmModal from "./DeleteComfirmModal";
 import EditLiftDetail from "./EditLiftDetail";
+import LiftVideo from "./LiftVideo";
+import { apiDeleteLiftRecord } from "../api/mainApi";
 import { useAuthStore } from "../stores/auth.store";
-import {
-  getYoutubeEmbedUrl,
-  getYoutubeId,
-  getYoutubeThumbnail,
-} from "../utils/youtube";
 
-function LiftDetailModal({ lift, onClose }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+function LiftDetailModal({ lift, onClose, onDeleted }) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const userId = useAuthStore((state) => state.user?.id);
 
   if (!lift) return null;
 
   const isOwner = lift.userId === userId || lift.user?.id === userId;
 
-  const youtubeId = getYoutubeId(lift.videoUrl);
-  const thumbnailUrl = getYoutubeThumbnail(youtubeId);
-  const embedUrl = getYoutubeEmbedUrl(youtubeId);
-
   const details = [lift.exercise?.name, lift.weightClass?.name].filter(Boolean);
+
+  const hdlDelete = async () => {
+    try {
+      setIsDeleting(true);
+
+      await apiDeleteLiftRecord(lift.id);
+
+      onDeleted?.(lift.id);
+      setShowDeleteConfirm(false);
+      onClose();
+    } catch (err) {
+      alert(err.response?.data?.message ?? "Unable to delete lift record.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div
@@ -64,6 +76,7 @@ function LiftDetailModal({ lift, onClose }) {
         <div className="mb-5 grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-zinc-800 bg-black p-4">
             <p className="text-xs text-zinc-500">Weight</p>
+
             <p className="mt-1 text-xl font-black text-yellow-400">
               {lift.weight} kg
             </p>
@@ -71,57 +84,12 @@ function LiftDetailModal({ lift, onClose }) {
 
           <div className="rounded-2xl border border-zinc-800 bg-black p-4">
             <p className="text-xs text-zinc-500">Repetitions</p>
+
             <p className="mt-1 text-xl font-black">{lift.reps}</p>
           </div>
         </div>
 
-        {youtubeId && !isPlaying && (
-          <button
-            type="button"
-            onClick={() => setIsPlaying(true)}
-            className="group relative mb-5 block aspect-video w-full overflow-hidden rounded-2xl border border-zinc-800 bg-black"
-          >
-            <img
-              src={thumbnailUrl}
-              alt="Lift video thumbnail"
-              className="size-full object-cover opacity-70 transition group-hover:scale-105 group-hover:opacity-90"
-            />
-
-            <span className="absolute inset-0 grid place-items-center">
-              <span className="grid size-16 place-items-center rounded-full bg-yellow-400 text-black">
-                <Play size={28} fill="currentColor" />
-              </span>
-            </span>
-          </button>
-        )}
-
-        {youtubeId && isPlaying && (
-          <iframe
-            src={embedUrl}
-            title="Lift verification video"
-            className="mb-5 aspect-video w-full rounded-2xl border border-zinc-800"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowFullScreen
-          />
-        )}
-
-        {!youtubeId && lift.videoUrl && (
-          <a
-            href={lift.videoUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mb-5 flex items-center justify-center gap-2 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 px-4 py-4 text-sm font-bold text-yellow-400 hover:bg-yellow-400 hover:text-black"
-          >
-            <ExternalLink size={18} />
-            Open verification video
-          </a>
-        )}
-
-        {!lift.videoUrl && (
-          <div className="mb-5 rounded-2xl border border-zinc-800 bg-black p-5 text-center text-sm text-zinc-500">
-            No verification video.
-          </div>
-        )}
+        <LiftVideo videoUrl={lift.videoUrl} />
 
         <div className="space-y-4 rounded-2xl border border-zinc-800 bg-black p-5">
           <EditLiftDetail lift={lift} canEdit={isOwner} />
@@ -129,6 +97,7 @@ function LiftDetailModal({ lift, onClose }) {
           {lift.status && (
             <div>
               <p className="text-xs text-zinc-500">Status</p>
+
               <p className="mt-1 text-sm font-bold capitalize text-green-400">
                 {lift.status}
               </p>
@@ -138,6 +107,7 @@ function LiftDetailModal({ lift, onClose }) {
           {lift.createdAt && (
             <div>
               <p className="text-xs text-zinc-500">Submitted</p>
+
               <p className="mt-1 text-sm text-zinc-200">
                 {new Date(lift.createdAt).toLocaleDateString("en-GB", {
                   day: "numeric",
@@ -148,7 +118,28 @@ function LiftDetailModal({ lift, onClose }) {
             </div>
           )}
         </div>
+
+        {isOwner && (
+          <div className="mt-5 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="flex items-center gap-2 rounded-xl border border-red-500/30 px-3 py-2 text-xs font-bold text-red-400 transition hover:bg-red-500 hover:text-white"
+            >
+              <Trash2 size={15} />
+              Delete record
+            </button>
+          </div>
+        )}
       </section>
+
+      {showDeleteConfirm && (
+        <DeleteConfirmModal
+          isDeleting={isDeleting}
+          onCancel={() => setShowDeleteConfirm(false)}
+          onConfirm={hdlDelete}
+        />
+      )}
     </div>
   );
 }
