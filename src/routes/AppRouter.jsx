@@ -17,13 +17,12 @@ import ProtectRoute from "../routes/ProtectRoute";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Public />,
-  },
-
-  {
     element: <GuestRoute />,
     children: [
+      {
+        path: "/",
+        element: <Public />,
+      },
       {
         path: "/login",
         element: <Login />,
