@@ -16,11 +16,13 @@ function ProfileHeader({ user, onEdit }) {
           </div>
 
           <div>
-            <p className="text-xs uppercase tracking-widest text-zinc-500">
+            <p className="text-md uppercase tracking-widest text-yellow-400">
               Profile
             </p>
 
             <h1 className="text-xl font-black">{user?.username}</h1>
+
+            <p className="text-xs font-semibold text-zinc-500">{user?.email}</p>
           </div>
         </div>
 
@@ -57,7 +59,7 @@ function ProfileHeader({ user, onEdit }) {
 
 function ProfileDetail({ label, value }) {
   return (
-    <div className="rounded-2xl bg-black p-3">
+    <div className="rounded-2xl border border-zinc-800 bg-black p-3">
       <p className="text-xs text-zinc-500">{label}</p>
 
       <p className="mt-1 capitalize">{value || "-"}</p>

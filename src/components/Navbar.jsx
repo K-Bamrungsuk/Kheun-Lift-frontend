@@ -39,10 +39,10 @@ function Navbar({ onSubmitLift }) {
             <button
               type="button"
               onClick={onSubmitLift}
-              className="ml-2 flex items-center gap-2 rounded-xl bg-yellow-400 px-4 py-2 text-sm font-black text-black hover:bg-amber-100"
+              className="ml-2 flex items-center gap-2 rounded-xl bg-yellow-400 px-4 py-2 text-sm font-bold text-black hover:bg-amber-100"
             >
               <Plus size={18} />
-              Add Lift
+              {/* Add Lift */}
             </button>
           </nav>
         </div>

@@ -10,7 +10,7 @@ function PersonalRecords({ records = [] }) {
 
       <div className="grid gap-3 sm:grid-cols-3">
         {personalRecords.map(({ name, record }) => (
-          <div key={name} className="rounded-2xl bg-black p-4">
+          <div key={name} className="rounded-2xl bg-black border border-zinc-800 p-4">
             <Dumbbell size={18} className="mb-3 text-yellow-400" />
 
             <p className="text-xs text-zinc-500">{name}</p>

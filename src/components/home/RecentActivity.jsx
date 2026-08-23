@@ -72,7 +72,7 @@ function RecentActivity({
                   </div>
                 </div>
 
-                <strong className="whitespace-nowrap text-xs">
+                <strong className="whitespace-nowrap text-sm text-yellow-400">
                   {item.weight} kg
                 </strong>
               </button>

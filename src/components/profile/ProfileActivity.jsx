@@ -44,7 +44,7 @@ function ProfileActivity({ records = [], onSelectLift }) {
                 </div>
               </div>
 
-              <strong className="whitespace-nowrap text-xs">
+              <strong className="whitespace-nowrap text-sm text-yellow-400">
                 {record.weight} kg
               </strong>
             </button>

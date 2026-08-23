@@ -12,7 +12,7 @@ function HomeActions({
       <button
         type="button"
         onClick={onSubmitLift}
-        className="rounded-2xl bg-yellow-400 py-4 font-black text-black hover:bg-amber-100"
+        className="rounded-2xl bg-yellow-400 py-4 font-bold text-black hover:bg-amber-100"
       >
         Submit Lift
       </button>

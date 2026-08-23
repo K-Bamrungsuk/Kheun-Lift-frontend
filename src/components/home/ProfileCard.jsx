@@ -31,8 +31,8 @@ function ProfileCard({ user, isLoading }) {
         </div>
 
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-yellow-400">
-            Your profile
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-yellow-400">
+            Profile
           </p>
 
           <h2 className="mt-1 truncate text-xl font-black">
