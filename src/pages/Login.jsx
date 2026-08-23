@@ -65,14 +65,14 @@ function Login() {
           autoComplete="current-password"
           required
           placeholder="Enter your password"
-          rightContent={
-            <Link
-              to="/forgot-password"
-              className="text-xs text-zinc-500 transition hover:text-yellow-500"
-            >
-              Forgot password?
-            </Link>
-          }
+          // rightContent={
+          //   <Link
+          //     to="/forgot-password"
+          //     className="text-xs text-zinc-500 transition hover:text-yellow-500"
+          //   >
+          //     Forgot password?
+          //   </Link>
+          // }
         />
 
         {error && <p className="text-center text-sm text-red-400">{error}</p>}
