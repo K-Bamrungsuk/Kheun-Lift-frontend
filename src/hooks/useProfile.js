@@ -42,7 +42,7 @@ function useProfile(refreshKey) {
     fetchProfile();
   }, [refreshKey]);
 
-  const handleSave = async (body) => {
+  const hdlSave = async (body) => {
     try {
       setIsSaving(true);
       setError("");
@@ -73,7 +73,7 @@ function useProfile(refreshKey) {
     isSaving,
     error,
     clearError: () => setError(""),
-    handleSave,
+    hdlSave,
   };
 }
 

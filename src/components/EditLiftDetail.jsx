@@ -10,7 +10,7 @@ function EditLiftDetail({ lift, canEdit }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSave = async () => {
+  const hdlSave = async () => {
     try {
       setIsSaving(true);
       setError("");
@@ -77,7 +77,7 @@ function EditLiftDetail({ lift, canEdit }) {
 
             <button
               type="button"
-              onClick={handleSave}
+              onClick={hdlSave}
               disabled={isSaving}
               className="rounded-xl bg-yellow-400 px-3 py-2 text-xs font-black text-black hover:bg-yellow-300 disabled:opacity-50"
             >

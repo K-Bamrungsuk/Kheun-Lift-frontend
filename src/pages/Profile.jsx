@@ -15,7 +15,7 @@ function Profile() {
   const { refreshKey } = useOutletContext();
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
-  const { user, records, isLoading, isSaving, error, clearError, handleSave } =
+  const { user, records, isLoading, isSaving, error, clearError, hdlSave } =
     useProfile(refreshKey);
 
   const [selectedLift, setSelectedLift] = useState(null);
@@ -62,7 +62,7 @@ function Profile() {
         {isEditOpen && (
           <EditUserCard
             user={user}
-            onSave={handleSave}
+            onSave={hdlSave}
             onClose={() => setIsEditOpen(false)}
             isSaving={isSaving}
             error={error}
