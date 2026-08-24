@@ -3,7 +3,7 @@ import { Pencil } from "lucide-react";
 
 import { apiEditLiftRecord } from "../api/mainApi";
 
-function EditLiftDetail({ lift, canEdit }) {
+function EditLiftDetail({ lift, canEdit, onUpdated }) {
   const [caption, setCaption] = useState(lift.caption ?? "");
   const [draft, setDraft] = useState(caption);
   const [isEditing, setIsEditing] = useState(false);
@@ -22,6 +22,9 @@ function EditLiftDetail({ lift, canEdit }) {
       });
 
       setCaption(newCaption);
+
+      // onUpdated?.({ ...lift, caption: newCaption });
+
       setIsEditing(false);
     } catch (err) {
       setError(err.response?.data?.message ?? "Unable to update caption.");
