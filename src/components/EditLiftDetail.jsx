@@ -3,7 +3,7 @@ import { Pencil } from "lucide-react";
 
 import { apiEditLiftRecord } from "../api/mainApi";
 
-function EditLiftDetail({ lift, canEdit, onUpdated }) {
+function EditLiftDetail({ lift, canEdit }) {
   const [caption, setCaption] = useState(lift.caption ?? "");
   const [draft, setDraft] = useState(caption);
   const [isEditing, setIsEditing] = useState(false);
@@ -22,8 +22,6 @@ function EditLiftDetail({ lift, canEdit, onUpdated }) {
       });
 
       setCaption(newCaption);
-
-      // onUpdated?.({ ...lift, caption: newCaption });
 
       setIsEditing(false);
     } catch (err) {

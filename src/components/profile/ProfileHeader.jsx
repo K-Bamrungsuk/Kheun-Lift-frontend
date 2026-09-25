@@ -1,21 +1,21 @@
 import { Pencil } from "lucide-react";
 
+function ProfileDetail({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-zinc-800 bg-black p-3">
+      <p className="text-xs text-zinc-500">{label}</p>
+
+      <p className="mt-1 capitalize">{value || "-"}</p>
+    </div>
+  );
+}
+
 function ProfileHeader({ user, onEdit }) {
   const profileInitial = user?.username?.trim().charAt(0).toUpperCase() || "?";
 
   const birthDate = user?.dateOfBirth
     ? new Date(user.dateOfBirth).toLocaleDateString("en-GB")
     : "-";
-
-  function ProfileDetail({ label, value }) {
-    return (
-      <div className="rounded-2xl border border-zinc-800 bg-black p-3">
-        <p className="text-xs text-zinc-500">{label}</p>
-
-        <p className="mt-1 capitalize">{value || "-"}</p>
-      </div>
-    );
-  }
 
   return (
     <section className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5">
